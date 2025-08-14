@@ -9,24 +9,41 @@ class AuthController extends Controller
 {
     public function login()
     {
-        return view('auth.login');
+        $pageTitle = "Login";
+        return view('auth.login', compact('pageTitle'));
     }
 
     public function register(){
-        return view('auth.signup');
+        $pageTitle = "Register";
+        return view('auth.signup', compact("pageTitle"));
     }
 
     public function registerpost(Request $request){
         $incomingField = $request->validate([
             'firstName' => 'required',
             'lastName' => 'required',
-            'phoneNo' => 'required||max:12',
+            'phoneNo' => 'required|max:12',
             'password' => 'required|min:8',
             'email' => 'required'
         ]);
 
         $incomingField['password'] = bcrypt($request->password);
+        // dd($incomingField);
         User::create($incomingField);
         return "Done";
+    }
+
+    public function loginpost(Request $request){
+        $incomingField = $request->validate([
+            'email' => 'required',
+            'password' => 'required'
+        ]);
+        // dd($incomingField);
+        if(auth()->attempt($incomingField)){
+            return "In";
+        }
+        else{
+            return "Out";
+        }
     }
 }
